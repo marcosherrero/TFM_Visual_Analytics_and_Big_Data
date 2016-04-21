@@ -1,0 +1,8 @@
+use estudioconduccion;
+
+select c.bastidor, c.marca, c.modelo, t.fecha, t.airbag, t.latitude, t.longitude
+	from trazasBastidor t, confVehiculo c
+ where t.bastidor = c.bastidor
+   and t.airbag=1 
+   and unix_timestamp(t.fecha) between unix_timestamp("2016-04-17 22:05:00") and unix_timestamp("2016-04-17 22:06:00");
+;
