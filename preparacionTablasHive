@@ -1,0 +1,80 @@
+--Seleccion de la base de datos
+use estudioconduccion;
+
+--borrado de tablas:
+drop table confVehiculos;
+drop table trazasBastidor;
+drop table resultados;
+
+--creamos tabla confVehiculo:
+create external table if not exists confVehiculo 
+(
+	bastidor string,
+	fecFabricacion timestamp,
+	marca string,
+	modelo string,
+	segmento string,
+	motor string,
+	cilindrada int,
+	vmmax int,
+	rpmmax int, 
+	numaxPasajero int,
+	pesoMinimo float,
+	pesoMaximo float,
+	consumoMedio float
+) row format delimited fields terminated by '|' stored as textfile;
+
+--creamos la tabla trazasBastidor:
+create external table if not exists trazasBastidor 
+(
+	bastidor string,
+	codigoMotor string,
+	fecha timestamp,
+	velocidad int,
+	marcha int,
+	revoluciones int,
+	consumo float,
+	pasajeros int, 
+	bultos int, 
+	pesoactual float,
+	iat int,
+	maf int,
+	frf int,
+	egr int,
+	ect1 int,
+	ect2 int,
+	ect3 int,
+	ect4 int,
+	codigoError int,
+	airbag int,
+	latitude string,
+	longitude string
+) row format delimited fields terminated by '|' stored as textfile;
+
+--creamos la tabla resultados:
+create table resultados
+(
+  bastidor string,
+  codigoMotor string,
+  fechaInicio timestamp,
+  fechaFin timestamp,
+  distancia float,
+  vmmedia float,
+	vmmax int,
+	total_veces_vmmax int,
+	rpmmax int,
+	total_veces_rpmmax int,
+	total_pasajeros int,
+	totalconsumo float,
+	total_peso float
+);
+
+--Cargar las tablas:
+--Tabla confVehiculo:
+load data inpath '/data/proyectoFinal/estudioConduccion/confVehiculo.csv' overwrite into table confVehiculo;
+ 
+--Tabla trazasBastidor:
+load data inpath '/data/proyectoFinal/estudioConduccion/manipulados_1.csv' overwrite into table trazasBastidor;
+--load data inpath '/data/proyectoFinal/estudioConduccion/trazasBastidor_AA2342342B4R3A_2.csv' into table trazasBastidor;
+--load data inpath '/data/proyectoFinal/estudioConduccion/trazasBastidor_AA2342342B4R3A_3.csv' into table trazasBastidor;
+--load data inpath '/data/proyectoFinal/estudioConduccion/trazasBastidor_5.csv' into table trazasBastidor;
