@@ -1,0 +1,7 @@
+use estudioconduccion;
+
+select t.*
+  from trazasBastidor t
+ where t.bastidor in (select c.bastidor from confVehiculo c where c.modelo="sirio")
+ order by t.bastidor,t.codigomotor,t.fecha
+;
