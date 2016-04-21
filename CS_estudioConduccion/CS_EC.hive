@@ -1,0 +1,60 @@
+use estudioconduccion;
+
+--Para vaciar los datos existentes en la tabla resultados, prodecemos a borrar y crear otra vez la tabla:
+drop table resultados
+;
+create table resultados (bastidor string,codigoMotor string,fechaInicio timestamp,fechaFin timestamp,distancia float,vmmedia float,vmmax int,total_veces_vmmax int,rpmmax int,total_veces_rpmmax int,total_pasajeros int,totalconsumo float,total_peso float)
+;
+
+insert into resultados
+select  t.bastidor,
+	t.codigomotor,
+	min(t.fecha) as fecha_min,
+	max(t.fecha) as fecha_max,
+	round(AVG(t.velocidad)*(round((((unix_timestamp(max(t.fecha))-unix_timestamp(min(t.fecha)))/60)/60),2))) as distancia,
+	round(AVG(t.velocidad),2) as vmmedia,
+	max(t.velocidad) as vmmax,
+	count(datos1.total_veces_vmax) as total_veces_vmmax,
+	max(t.revoluciones) as revoluciones,
+	count (datos1.total_veces_rpm) as total_veces_rpm,
+	max(pasajeros) as totalpasajeros,
+	round(((((AVG(t.velocidad))*(((unix_timestamp(max(t.fecha))-unix_timestamp(min(t.fecha)))/60)/60))*datos2.consumo)/100),2) as consumo, 
+	max(t.pesoactual) as totalpeso
+ from trazasBastidor t, 
+      (select t2.bastidor,t2.codigomotor,max(t2.velocidad) as total_veces_vmax,max(t2.revoluciones) as total_veces_rpm
+       from trazasbastidor t2
+       group by t2.bastidor,t2.codigomotor) datos1,
+      (select c1.bastidor,c1.consumo 
+       from confVehiculo c1) datos2
+ where t.bastidor=datos1.bastidor
+ and t.codigomotor=datos1.codigomotor
+ and t.bastidor=datos2.bastidor
+ and t.bastidor = "AA2342342B4R3A"
+ group by t.bastidor,t.codigomotor,datos2.consumo
+;
+
+select * from resultados
+;
+select c.marca,
+			 c.modelo,
+			 c.segmento,
+			 c.motor,
+			 c.cilindrada,
+			 c.vmmax,
+			 c.revmax, --c.rpmmax,  
+			 c.numaxPasajero,
+			 c.pesoMinimo,
+			 c.pesoMaximo,
+			 c.consumo, --c.cosumoMedio,
+			 r.bastidor, 
+			 min(r.fechaInicio), max(r.fechaFin), 
+			 sum (r.distancia), 
+			 ROUND ((sum(r.vmmedia)/datos.contador),2), 
+			 sum(r.totalconsumo),
+			 ROUND ((sum(total_pasajeros)/datos.contador),2),
+			 ROUND ((sum(total_peso)/datos.contador),2)
+from resultados r, confVehiculo c,
+		  (select count(*) as contador from resultados r2) datos
+where r.bastidor = c.bastidor
+group by c.marca,c.modelo,c.segmento,c.motor,c.cilindrada,c.vmmax,c.revmax,c.numaxPasajero,c.pesominimo,c.pesomaximo,c.consumo,r.bastidor,datos.contador
+;
