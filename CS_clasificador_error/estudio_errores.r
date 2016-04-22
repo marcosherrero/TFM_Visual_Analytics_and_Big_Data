@@ -26,6 +26,10 @@ modelo.kmeans <- kmeans((datos2$maf & datos2$coderr),2)
 # hay que seguir probando apliando los cluster hasta dar con el porcentaje mas alto.
 modelo.kmeans
 
+#Mostramos los registros clasificados con mismo error:
+datos[which (datos[23]==2 & datos[12]==9000 & datos[19]==180)]
+datos[which (datos[23]==2 & datos[12]==9000 & datos[19]==180), 1]
+
 #Añadimos a los datos generales el campo generado por el algoritmo:
 datos$cluster <- modelo.kmeans$cluster
 write.csv(datos,'datos_caso_uso_2.csv',row.names=F)
